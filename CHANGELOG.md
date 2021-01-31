@@ -1,12 +1,38 @@
-# v 0.8.1 ( Unreleased ) 
+# v 0.9.0 ( unreleased )
 ### New Features
-
+* Added snmpmetric unit tests
+* Updated to last "gosnmp" v1.28.0 release
+* Added Mock SnmpServer and measurements unit tests
+* Added [trim](https://github.com/toni-moreno/snmpcollector/wiki/Component:-SNMP-Metrics#about-octetstringhex-string) functions in octetstring based metrics (#405)
+* added HTTPS support 
+* Added new measurement types: multi-index and indirect multi tag to retrieve complex MIBs like [QoS](https://github.com/toni-moreno/snmpcollector/wiki/Example:-Cisco-QoS)
 
 ### fixes
-* Fix #379,#409,#410
+* Fixed  #446
+* Fixed  #405
+* Fixed  #398
+
+### breaking changes
+* Measurement TagName property (only retrieved on runtime API) changed from `string` to `[]string`
+
+# v 0.8.1 ( 2020-10-06 ) 
+### New Features
+* Upgraded dependencies from dep to gomodules
+* Added config through environment vars ( docker friendly ),implements #420
+* Added new HTTP option "listen" as substitute for "port" ( still running but deprecated ).
+* Added new GENERAL option "log_mode" (file/console) to enable only main agent logs and http_access.log to be written in console. This option does not affect to the device runtime/debug logs that will be written in a file in the logdir with filename as the id of the device.
+* Added new DATABASE option "log_mode" (none/file/console) to enable or disable SQL logs and choose where to write (file/console)
+* New improved Dockerfile (now running as non root user) and now docker image could be built from Makefile.docker
+
+### fixes
+* Fix #379,#409,#410,#442
+* Fixed lodash vulnerabily, bump to 4.17.19
+* Fixed jquery vulnerability, Bump from 3.0.0 to 3.5.0
 
 ### breaking changes
 
+* no longer supported "-httpPort" command line parameter use "-httpListen" instead (still supported but deprecated Port option at config file) 
+* DOCKER IMAGE upgrade needs for previous ownership change to UID/GID=472 on all its persistent files/volumes 
 
 # v 0.8.0 ( 2018-11-05) 
 ### New Features

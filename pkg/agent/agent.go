@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/toni-moreno/snmpcollector/pkg/agent/bus"
 	"github.com/toni-moreno/snmpcollector/pkg/agent/device"
 	"github.com/toni-moreno/snmpcollector/pkg/agent/output"
@@ -337,7 +337,7 @@ func End() (time.Duration, error) {
 func ReloadConf() (time.Duration, error) {
 	start := time.Now()
 	if CheckAndSetReloadProcess() == true {
-		log.Warning("RELOADCONF: There is another reload process running while trying to reload at %s  ", start.String())
+		log.Warnf("RELOADCONF: There is another reload process running while trying to reload at %s  ", start.String())
 		return time.Since(start), fmt.Errorf("There is another reload process running.... please wait until finished ")
 	}
 

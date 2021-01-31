@@ -42,7 +42,8 @@ func main() {
 	log.SetFlags(0)
 
 	ensureGoPath()
-	readVersionFromPackageJson()
+	//readVersionFromPackageJson()
+	readVersionFromGit()
 
 	log.Printf("Version: %s, Linux Version: %s, Package Iteration: %s\n", version, linuxPackageVersion, linuxPackageIteration)
 
@@ -60,9 +61,6 @@ func main() {
 
 	for _, cmd := range flag.Args() {
 		switch cmd {
-		case "setup":
-			setup()
-
 		case "build":
 			pkg := "./pkg/"
 			clean()
@@ -137,6 +135,26 @@ func readVersionFromPackageJson() {
 
 	version = jsonObj["version"].(string)
 	linuxPackageVersion = version
+	linuxPackageIteration = ""
+
+	// handle pre version stuff (deb / rpm does not support semver)
+	parts := strings.Split(version, "-")
+
+	if len(parts) > 1 {
+		linuxPackageVersion = parts[0]
+		linuxPackageIteration = parts[1]
+	}
+}
+
+func readVersionFromGit() {
+	cmd := "git describe --abbrev=0 --tag"
+	out, err := exec.Command("bash", "-c", cmd).Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	linuxPackageVersion = strings.TrimSpace(string(out))
+	version = linuxPackageVersion
 	linuxPackageIteration = ""
 
 	// handle pre version stuff (deb / rpm does not support semver)
@@ -320,14 +338,6 @@ func ChangeWorkingDir(dir string) {
 	os.Chdir(dir)
 }
 
-func setup() {
-	runPrint("go", "get", "-v", "github.com/tools/godep")
-	//pending to check if these following 3 lines are really needed
-	runPrint("go", "get", "-v", "github.com/blang/semver")
-	runPrint("go", "get", "-v", "github.com/mattn/go-sqlite3")
-	runPrint("go", "install", "-v", "github.com/mattn/go-sqlite3")
-}
-
 func test(pkg string) {
 	setBuildEnv()
 	runPrint("go", "test", "-short", "-timeout", "60s", pkg)
@@ -410,7 +420,7 @@ func setBuildEnv() {
 }
 
 func getGitSha() string {
-	v, err := runError("git", "describe", "--always", "--tags")
+	v, err := runError("git", "rev-parse", "--short", "HEAD")
 	if err != nil {
 		return "unknown-dev"
 	}
